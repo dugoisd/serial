@@ -142,7 +142,7 @@ func (p *Port) Write(b []byte) (n int, err error) {
 	return p.f.Write(b)
 }
 
-// Discards data written to the port but not transmitted,
+// Flush Discards data written to the port but not transmitted,
 // or data received but not read
 func (p *Port) Flush() error {
 	const TCFLSH = 0x540B
@@ -157,6 +157,20 @@ func (p *Port) Flush() error {
 		return nil
 	}
 	return errno
+}
+
+// GetCTS get current CTS state
+func (p *Port) GetCTS() bool {
+	v, errno := p.tiocmget()
+	if errno != nil {
+		return false
+	}
+	return (v & unix.TIOCM_CTS) != 0
+}
+
+// Tiocmget returns the state of the MODEM bits.
+func (p *Port) tiocmget() (int, error) {
+	return unix.IoctlGetInt(int(p.f.Fd()), unix.TIOCMGET)
 }
 
 func (p *Port) Close() (err error) {
