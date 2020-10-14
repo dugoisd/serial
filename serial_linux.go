@@ -4,6 +4,7 @@ package serial
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"time"
 	"unsafe"
@@ -165,6 +166,7 @@ func (p *Port) GetCTS() bool {
 	if errno != nil {
 		return false
 	}
+	log.Println("Modem Value : %X", v)
 	return (v & unix.TIOCM_CTS) != 0
 }
 
